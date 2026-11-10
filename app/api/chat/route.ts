@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai";
+import { tools } from "@/lib/ai/tools";
 import { convertToModelMessages, createUIMessageStreamResponse, stepCountIs, streamText, toUIMessageStream, UIMessage } from "ai";
 
 const systemPrompt = `You are a helpful AI assistant with three tools:
@@ -16,12 +16,19 @@ const systemPrompt = `You are a helpful AI assistant with three tools:
 
 Be concise. Stream your final answer in plain text or markdown.`;
 
-export default async function POST(request: Request) {
-    const {message}: {message: UIMessage} = await request.json();
+export async function POST(request: Request) {
+    const {messages}: {messages: UIMessage[]} = await request.json();
     const response = streamText({
-        model: openai('gpt-4.1-mini'),
+        model: 'openai/gpt-4.1-mini',
         system: systemPrompt,
-        messages: await convertToModelMessages([message]),
+        messages: await convertToModelMessages(messages),
+        tools,
+        toolApproval: {
+            sendEmail: {
+                type: 'user-approval',
+                reason: 'You are about to send an email.',
+            }
+        },
         stopWhen: stepCountIs(10),
         onError: (err) => {
             throw new Error(`${err.error}`)

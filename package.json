@@ -10,10 +10,14 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "4.0.111",
+    "@ai-sdk/react": "4.0.170",
     "ai": "7.0.166",
+    "clsx": "2.1.1",
+    "lucide-react": "1.71.0",
     "next": "16.4.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "tailwind-merge": "3.7.0",
     "zod": "4.6.7"
   },
   "devDependencies": {

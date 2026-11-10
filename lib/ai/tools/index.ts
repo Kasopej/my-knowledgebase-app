@@ -1,10 +1,11 @@
-import { tool } from "ai";
+import { InferUITools, tool, UIDataTypes, UIMessage } from "ai";
 import z from "zod";
 import { embedQuery } from "../rag/embedding";
 import { StoredChunk, vectorStore } from "../rag/vector-store";
 
-type ResultChunk = Omit<StoredChunk, "id" | "embedding"> & {
+type ResultChunk = Omit<StoredChunk, "id" | "embedding" | "documentName"> & {
     similarity: number;
+    source: string;
 }
 
 export const searchKnowledgeBase = tool({
@@ -17,7 +18,7 @@ export const searchKnowledgeBase = tool({
         message: z.string().describe("A message describing the result of the search."),
         chunks: z.array(z.object({
             documentId: z.string().describe("The ID of the document the chunk belongs to."),
-            documentName: z.string().describe("The name of the document the chunk belongs to."),
+            source: z.string().describe("The name of the document the chunk belongs to."),
             chunkIndex: z.number().describe("The index of the chunk within the document."),
             content: z.string().describe("The content of the chunk."),
             similarity: z.number().describe("The similarity score of the chunk to the query."),
@@ -38,7 +39,7 @@ export const searchKnowledgeBase = tool({
             message: `Found ${searchResults.length} relevant document chunk(s) in the knowledge base.`,
             chunks: searchResults.map(result => ({
                 documentId: result.chunk.documentId,
-                documentName: result.chunk.documentName,
+                source: result.chunk.documentName,
                 chunkIndex: result.chunk.chunkIndex,
                 content: result.chunk.content,
                 similarity: result.similarity
@@ -106,3 +107,10 @@ export const sendMailTool = tool({
         return { success: true, address, subject, timestamp: new Date().toISOString() };
     },
 });
+
+export const tools = {
+    searchKnowledgeBase,
+    getWeather: getWeatherTool,
+    sendEmail: sendMailTool,}
+export type ChatTools = InferUITools<typeof tools>;
+export type ChatUIMessage = UIMessage<never, UIDataTypes, ChatTools>;

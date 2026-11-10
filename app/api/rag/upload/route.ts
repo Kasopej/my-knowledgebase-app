@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     try {
         const formData = await request.formData();
     const file = formData.get("file") as File;
-    const name = formData.get("name") as string || `${file.name} ${Date.now()}`;
+    const name = formData.get("name") as string || file.name || `file ${Date.now()}`;
 
     if(!file) {
         return NextResponse.json("No file uploaded", { status: 400 });
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         return NextResponse.json("File appears to be empty", { status: 400 });
     }
     await vectorStore.addDocument({ name, chunks, embeddings: await embedChunks(chunks) });
-    return NextResponse.json({success: true}, { status: 204 })
+    return NextResponse.json({success: true}, { status: 200 })
     } catch (error) {
         console.error(error);
         return NextResponse.json("An error occurred", { status: 500 });

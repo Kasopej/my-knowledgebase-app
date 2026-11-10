@@ -1,6 +1,6 @@
 import { embed, EmbeddingModel, embedMany } from "ai";
 
-const defaultEmbeddingModel = "text-embedding-3-small";
+const defaultEmbeddingModel = "openai/text-embedding-3-small";
 
 export const embedQuery = async (query: string, model: EmbeddingModel = defaultEmbeddingModel): Promise<number[]> => {
     const { embedding } = await embed({

@@ -152,6 +152,7 @@ class VectorStore {
   }
 
   async listDocuments(): Promise<StoredDocument[]> {
+    await this.ensureLoaded();
     return Array.from(this.documents.values()).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }
 
